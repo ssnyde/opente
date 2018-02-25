@@ -1,3 +1,6 @@
 [submodule "vxi11"]
 	path = vxi11
 	url = git@github.com:applied-optics/vxi11.git
+[submodule "scpi-parser"]
+	path = scpi-parser
+	url = git@github.com:j123b567/scpi-parser.git
