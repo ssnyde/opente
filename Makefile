@@ -1,48 +1,74 @@
 VERSION=1.08
 
 #CFLAGS = -Wall -g
-CFLAGS = -g
-INSTALL = install
-prefix = /usr/local
+CFLAGS = -g -fpermissive -fPIC
 CXX = g++
+#LDFLAGS = -Wl,--version-script=linker.version
+INCLUDE = -Iout/tmp -Ivxi11/library
+BIN = out/bin
+TMP = out/tmp
+SOVERSION = 1
 
-.PHONY : install clean dist distclean all
+.PHONY : all clean svc cmd library
 
-all: vxi11_svc vxi11_cmd
+all: svc cmd library
 
-vxi11_svc: vxi11_svc_core.o vxi11_svc.o vxi11_xdr.o
+svc: $(BIN)/vxi11_svc
+
+$(BIN)/vxi11_svc: $(TMP)/vxi11_svc_core.o $(TMP)/vxi11_svc.o $(TMP)/vxi11_xdr.o
 	$(CXX) $(CFLAGS) -o $@ $^
 
-vxi11_svc_core.o: vxi11_svc_core.c vxi11.h
-	$(CXX) $(CFLAGS) -c $< -o $@
+$(TMP)/%.o: vxi11_svc/%.c $(TMP)/vxi11.h
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-vxi11_cmd: vxi11_cmd.o vxi11_user.o vxi11_clnt.o vxi11_xdr.o
+cmd: $(BIN)/vxi11_cmd
+
+$(BIN)/vxi11_cmd: $(TMP)/vxi11_cmd.o $(TMP)/vxi11_user.o $(TMP)/vxi11_clnt.o $(TMP)/vxi11_xdr.o
 	$(CXX) $(CFLAGS) -o $@ $^
 
-vxi11_cmd.o: vxi11_cmd.cc vxi11_user.cc vxi11.h
-	$(CXX) $(CFLAGS) -c $< -o $@
+#$(TMP)/%.o: vxi11/library/%.cc $(TMP)/vxi11.h
+#	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
-vxi11_user.o: vxi11_user.cc vxi11.h
-	$(CXX) $(CFLAGS) -c $< -o $@
+library: $(BIN)/libvxi11.so.$(SOVERSION)
 
-vxi11.h vxi11_clnt.c vxi11_svc.c vxi11_xdr.c : vxi11.x
-	rpcgen -M vxi11.x
+$(BIN)/libvxi11.so.$(SOVERSION) : $(TMP)/vxi11_user.o $(TMP)/vxi11_clnt.o $(TMP)/vxi11_xdr.o
+	$(CXX) $(LDFLAGS) -shared -Wl,-soname,libvxi11.so.$(SOVERSION) $^ -o $@
+
+$(TMP)/%.o: vxi11/utils/%.c $(TMP)/vxi11.h
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
+
+$(TMP)/%.o: vxi11/library/%.c $(TMP)/vxi11.h
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
+
+$(TMP)/%.o: $(TMP)/%.c $(TMP)/vxi11.h
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
+
+#$(TMP)/vxi11.h: vxi11/library/vxi11.x $(TMP)/.f
+#	rpcgen -M -h -o $@ $<
+
+#$(TMP)/vxi11_clnt.c: vxi11/library/vxi11.x $(TMP)/.f
+#	rpcgen -M -l -o $@ $<
+
+#$(TMP)/vxi11_svc.c: vxi11/library/vxi11.x $(TMP)/.f
+#	rpcgen -M -m -o $@ $<
+
+#$(TMP)/vxi11_xdr.c: vxi11/library/vxi11.x $(TMP)/.f
+#	rpcgen -M -c -o $@ $<
+
+$(TMP)/vxi11.h $(TMP)/vxi11_clnt.c $(TMP)/vxi11_svc.c $(TMP)/vxi11_xdr.c: vxi11/library/vxi11.x
+	cp vxi11/library/vxi11.x $(TMP)/
+	cd $(TMP) && rpcgen -M $(notdir $<)
+
+#$(BIN)/.f $(TMP)/.f $(HEADER_VXI)/.f:
+#	mkdir -p $(dir $@)
+#	touch $@
 
 TAGS: $(wildcard *.c) $(wildcard *.h) $(wildcard *.cc)
 	etags $^
 
 clean:
-	rm -f *.o vxi11_cmd vxi11.h vxi11_svc.c vxi11_xdr.c vxi11_clnt.c TAGS
+	rm -fr out
+	rm -f TAGS
 
-install: vxi11_cmd
-	$(INSTALL) vxi11_cmd $(DESTDIR)$(prefix)/bin/
-
-dist : distclean
-	mkdir vxi11-$(VERSION)
-	cp -p vxi11_cmd.cc vxi11_user.cc vxi11_user.h vxi11.x vxi11-$(VERSION)/
-	cp -p Makefile CHANGELOG.txt README.txt GNU_General_Public_License.txt vxi11-$(VERSION)/
-	tar -zcf vxi11-$(VERSION).tar.gz vxi11-$(VERSION)
-
-distclean : 
-	rm -rf vxi11-$(VERSION)
-	rm -f vxi11-$(VERSION).tar.gz
+$(shell mkdir -p $(BIN))
+$(shell mkdir -p $(TMP))
