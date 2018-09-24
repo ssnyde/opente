@@ -1,7 +1,7 @@
 VERSION=1.08
 
 #CFLAGS = -Wall -g
-CFLAGS = -g -fpermissive -fPIC
+CFLAGS = -pg -fpermissive -fPIC
 CXX = g++
 #LDFLAGS = -Wl,--version-script=linker.version
 INCLUDE = -Iout/tmp -Ivxi11/library
@@ -34,7 +34,7 @@ library: $(BIN)/libvxi11.so.$(SOVERSION)
 $(BIN)/libvxi11.so.$(SOVERSION) : $(TMP)/vxi11_user.o $(TMP)/vxi11_clnt.o $(TMP)/vxi11_xdr.o
 	$(CXX) $(LDFLAGS) -shared -Wl,-soname,libvxi11.so.$(SOVERSION) $^ -o $@
 
-$(TMP)/%.o: vxi11/utils/%.c $(TMP)/vxi11.h
+$(TMP)/%.o: vxi11_cmd/%.c $(TMP)/vxi11.h
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 $(TMP)/%.o: vxi11/library/%.c $(TMP)/vxi11.h

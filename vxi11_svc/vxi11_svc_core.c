@@ -1,6 +1,7 @@
 #include "vxi11.h"
 
 char * respbuffer;
+char waveform[4194304];
 
 //DEVICE_CORE functions
 bool_t create_link_1_svc(Create_LinkParms * params, Create_LinkResp * resp, struct svc_req * rqstp)
@@ -17,17 +18,25 @@ bool_t device_write_1_svc(Device_WriteParms * params, Device_WriteResp * resp, s
 {
   resp->error = 0;
   resp->size = params->data.data_len;
-  fprintf(stderr, "Hit %s\n\r", __FUNCTION__);
+  //if you get a t, that's a trigger, update buffer
+  if (*params->data.data_val == 't')
+    {
+      unsigned i;
+      for (i=0;i<sizeof(waveform);i++)
+	{
+	  waveform[i] = rand();
+	}
+    }
+  fprintf(stderr, "Hit %s, got first char %c\n\r", __FUNCTION__, *params->data.data_val);
 }
 
 bool_t device_read_1_svc(Device_ReadParms * params, Device_ReadResp * resp, struct svc_req * rqstp)
 {
   resp->error = 0;
-  const char respdata[] = "MYTE";
-  respbuffer = (char *)malloc(4);
-  memcpy(respbuffer, respdata, 4);
-  resp->data.data_val = respbuffer;
-  resp->data.data_len = 4;
+  //respbuffer = (char *)malloc(sizeof(waveform));
+  //memcpy(respbuffer, waveform, sizeof(waveform));
+  resp->data.data_val = waveform;
+  resp->data.data_len = sizeof(waveform);
   resp->reason = 4;
   fprintf(stderr, "Hit %s\n\r", __FUNCTION__);
 }
