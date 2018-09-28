@@ -38,61 +38,62 @@
 int main(int argc, char *argv[])
 {
 
-	char *device_ip;
-	char *device_name = NULL;
-	char cmd[256];
-	char buf[BUF_LEN];
-	int ret;
-	long bytes_returned;
-	VXI11_CLINK *clink;
+  char *device_ip;
+  char *device_name = NULL;
+  char cmd[256];
+  char buf[BUF_LEN];
+  int ret;
+  long bytes_returned;
+  VXI11_CLINK *clink;
 
-	if (argc < 2) {
-		printf("usage: %s your.inst.ip.addr [device_name]\n", argv[0]);
-		exit(1);
-	}
+  if (argc < 2) {
+    printf("usage: %s your.inst.ip.addr [device_name]\n", argv[0]);
+    exit(1);
+  }
 
-	device_ip = argv[1];
-	if (argc > 2) {
-		device_name = argv[2];
-	}
-	if(vxi11_open_device(&clink, device_ip, device_name)){
-		printf("Error: could not open device %s, quitting\n",
-		       device_ip);
-		exit(2);
-	}
+  device_ip = argv[1];
+  if (argc > 2) {
+    device_name = argv[2];
+  }
+  if(vxi11_open_device(&clink, device_ip, device_name)){
+    printf("Error: could not open device %s, quitting\n",
+	   device_ip);
+    exit(2);
+  }
 
-	while (1) {
-		memset(cmd, 0, 256);	// initialize command string
-		memset(buf, 0, BUF_LEN);	// initialize buffer
-		printf("Input command or query ('q' to exit): ");
-		fgets(cmd, 256, stdin);
-		cmd[strlen(cmd) - 1] = 0;	// just gets rid of the \n
-		if (strncasecmp(cmd, "q", 1) == 0) {
-			break;
-		}
+  while (1) {
+    memset(cmd, 0, 256);	// initialize command string
+    memset(buf, 0, BUF_LEN);	// initialize buffer
+    printf("Input command or query ('q' to exit): ");
+    fgets(cmd, 256, stdin);
+    cmd[strlen(cmd) - 1] = 0;	// just gets rid of the \n
+    if (strncasecmp(cmd, "q", 1) == 0) {
+      break;
+    }
 
-		if (vxi11_send(clink, cmd, strlen(cmd)) < 0) {
-			break;
-		}
-		if (strstr(cmd, "?") != 0) {
-		  struct timespec start, end;
-		  unsigned diff;
-		  clock_gettime(CLOCK_MONOTONIC, &start);
-		  bytes_returned = vxi11_receive(clink, buf, BUF_LEN);
-			clock_gettime(CLOCK_MONOTONIC, &end);
-			diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
-			printf("vxi11_receive took %d seconds", diff);
-			printf("Got %ld bytes\n\r", bytes_returned);
-			if (bytes_returned > 0) {
-				printf("%s\n", buf);
-			} else if (bytes_returned == -15) {
-				printf("*** [ NOTHING RECEIVED ] ***\n");
-			} else {
-				break;
-			}
-		}
-	}
+    if (vxi11_send(clink, cmd, strlen(cmd)) < 0) {
+      break;
+    }
+    if (strstr(cmd, "?") != 0) {
+      struct timespec start, end;
+      unsigned diff;
+      clock_gettime(CLOCK_MONOTONIC, &start);
+      bytes_returned = vxi11_receive(clink, buf, BUF_LEN);
+      clock_gettime(CLOCK_MONOTONIC, &end);
+      diff = BILLION * (end.tv_sec - start.tv_sec) + end.tv_nsec - start.tv_nsec;
+      printf("vxi11_receive took %d seconds", diff);
+      printf("Got %ld bytes\n\r", bytes_returned);
+      if (bytes_returned > 0) {
+	printf("%s\n", buf);
+      } else if (bytes_returned == -15) {
+	printf("*** [ NOTHING RECEIVED ] ***\n");
+      } else {
+	break;
+      }
+    }
+  }
 
-	ret = vxi11_close_device(clink, device_ip);
-	return 0;
+  ret = vxi11_close_device(clink, device_ip);
+  return 0;
 }
+
