@@ -25,3 +25,14 @@ external\
 1. cd bsp/de10-nano-hardware
 2. make qsys_compile
 3. make quartus_compile
+
+### Software
+make all (may or may not build hardware as a depedency)
+
+### Output files
+Preloader image: software/preloader/preloader-mkpimage.bin
+U-boot image: software/preloader/uboot-socfpga/u-boot.img
+Compiled boot script: u-boot.scr
+Device tree binary: soc_system.dtb
+FPGA raw bitstream: output_files/de10_nano_hardware.rbf
+
