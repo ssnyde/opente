@@ -1,0 +1,37 @@
+#set variables for the directories where the boot files are saved
+setenv tftp-kernel-dir opente_kernel
+setenv tftp-sockit-dir opente_fpga
+setenv nfs-rootfs-dir /srv/nfs/opente_rootfs/rootfs/
+
+#serverip and nfsip are the same here, but the TFTP and NFS servers could be 2 separate servers with different IP addresses
+setenv serverip 192.168.1.110
+setenv nfsip 192.168.1.110
+#these arguments will be passed to the linux kernel during boot
+#this sets up the serial terminal and baud rate, tells the kernel to obtain an IP address via dhcp,
+#and sets the nfs information for the kernel rootfs
+setenv bootargs console=ttyS0,115200 ip=dhcp root=/dev/nfs rw nfsroot=${nfsip}:${nfs-rootfs-dir}
+
+#set variables for the files to be transferred
+setenv fpga-image soc_system.rbf
+setenv dtb-image soc_system.dtb
+setenv kernel-image zImage
+
+#set the address where the files will be loaded into RAM when transferred via tftp
+setenv fpgadata 0x2000000
+setenv fpgadatasize 0x700000
+setenv dtbaddr 0x00000100
+setenv kerneladdr 0x8000
+
+#create commands to transfer files, load fpga, and boot kernel
+#tftp server dir was set as /srv/tftp/ in the tftp config file, so tftp transfers are relative to this directory
+setenv get-fpgadata 'tftp ${fpgadata} ${tftp-sockit-dir}/${fpga-image}'
+setenv load-fpga 'fpga load 0 ${fpgadata} ${fpgadatasize}'
+setenv get-dtb 'tftp ${dtbaddr} ${tftp-sockit-dir}/${dtb-image}'
+setenv get-kernel 'tftp ${kerneladdr} ${tftp-kernel-dir}/${kernel-image}'
+setenv bootnfs 'bootz ${kerneladdr} - ${dtbaddr}'
+
+#run all the file transfer commands and boot
+#bridge_enable_handoff is predefined with u-boot loaded from gsrd sd card
+#and is required if the fpga design uses the bridges between the fpga and hps
+#if u-boot was loaded from DS-5, then bridge_enable_handoff should be defined prior to running this command
+run get-fpgadata load-fpga get-dtb get-kernel bridge_enable_handoff bootnfs

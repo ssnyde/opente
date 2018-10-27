@@ -538,6 +538,26 @@ sd-update-uboot: $(NEXTSTAGE_BIN)
 
 sd-update-preloader-uboot: sd-update-preloader sd-update-uboot
 
+# Create image per tutorial here
+# https://bitlog.it/hardware/building-embedded-linux-for-the-terasic-de10-nano-and-other-cyclone-v-soc-fpgas/
+# Based on https://rocketboards.org/foswiki/Documentation/EmbeddedLinuxBeginnerSGuide
+.PHONY: sd-create-netboot-image
+sd-create-netboot-image: u-boot-netboot.scr $(UBOOT_STAMP) $(PRELOADER_STAMP)
+	dd if=/dev/zero of=sdcard-netboot.img bs=512M count=1
+	sudo losetup /dev/loop0 sdcard-netboot.img
+	echo -e "524288,,1\n4096,,2\n2048,,a2" | sudo sfdisk /dev/loop0
+	sudo partprobe /dev/loop0
+	sudo dd if=software/preloader/preloader-mkpimage.bin of=/dev/loop0p3 bs=64k seek=0
+	sudo mkfs -t vfat /dev/loop0p1
+	mkdir -p temp_mount
+	sudo mount /dev/loop0p1 temp_mount/
+	sudo cp software/preloader/uboot-socfpga/u-boot.img u-boot-netboot.scr temp_mount/
+	sync
+	sudo umount temp_mount
+	rmdir temp_mount
+	sudo losetup -d /dev/loop0
+
+
 ################################################
 
 
@@ -602,21 +622,15 @@ SCRUB_CLEAN_FILES += $(DEVICE_TREE_SOURCE) $(DEVICE_TREE_BLOB)
 
 
 ################################################
-boot.script: Makefile
-	@$(RM) $@
-	@$(ECHO) "Generating $@"
-	@$(ECHO) "fatload mmc 0:1 \$$fpgadata $(QUARTUS_RBF);" >>$@
-	@$(ECHO) "fpga load 0 \$$fpgadata \$$filesize;" >>$@
-	@$(ECHO) "setenv fdtimage $(DEVICE_TREE_BLOB);" >>$@
-	@$(ECHO) "run bridge_enable_handoff;" >>$@
-	@$(ECHO) "run mmcload;" >>$@
-	@$(ECHO) "run mmcboot;" >>$@
 
 ifeq ($(wildcard $(UBOOT_MKIMAGE)),)
 $(UBOOT_MKIMAGE): $(PRELOADER_STAMP)
 endif
 
 u-boot.scr: boot.script $(UBOOT_MKIMAGE)
+	$(UBOOT_MKIMAGE) -A arm -O linux -T script -C none -a 0 -e 0 -n "bootscript" -d $< $@
+
+u-boot-netboot.scr: boot-netboot.script $(UBOOT_MKIMAGE)
 	$(UBOOT_MKIMAGE) -A arm -O linux -T script -C none -a 0 -e 0 -n "bootscript" -d $< $@
 
 SD_FAT_TGZ ?= sd_fat.tar.gz
