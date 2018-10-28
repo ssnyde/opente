@@ -557,6 +557,25 @@ sd-create-netboot-image: u-boot-netboot.scr $(UBOOT_STAMP) $(PRELOADER_STAMP)
 	rmdir temp_mount
 	sudo losetup -d /dev/loop0
 
+.PHONY: sd-create-image
+sd-create-image: u-boot.scr $(UBOOT_STAMP) $(PRELOADER_STAMP)
+	dd if=/dev/zero of=sdcard.img bs=512M count=1
+	sudo losetup /dev/loop0 sdcard.img
+	echo -e "524288,,1\n4096,,2\n2048,,a2" | sudo sfdisk /dev/loop0
+	sudo partprobe /dev/loop0
+	sudo dd if=software/preloader/preloader-mkpimage.bin of=/dev/loop0p3 bs=64k seek=0
+	sudo mkfs -t vfat /dev/loop0p1
+	sudo mkfs.ext4 /dev/loop0p2
+	mkdir -p temp_mount
+	sudo mount /dev/loop0p1 temp_mount/
+	sudo cp software/preloader/uboot-socfpga/u-boot.img u-boot-netboot.scr \
+		output_files/de10_nano_hardware.rbf soc_system.dtb \
+		temp_mount/
+	sync
+	sudo umount temp_mount
+	rmdir temp_mount
+	sudo losetup -d /dev/loop0
+
 SCRUB_CLEAN_FILES += sdcard-netboot.img
 
 
