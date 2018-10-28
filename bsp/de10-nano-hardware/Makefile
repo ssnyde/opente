@@ -117,7 +117,7 @@ SOFTWARE_DIR := software
 PRELOADER_DIR := $(SOFTWARE_DIR)/preloader
 
 AR_REGEX += \
-	Makefile ip readme.txt ds5 \
+	Makefile ip readme.txt ds5 *.script \
 	altera_avalon* *.qpf *.qsf *.sdc *.v *.sv *.vhd *.qsys *.tcl *.terp *.stp \
 	*.sed quartus.ini *.sof *.rbf *.sopcinfo *.jdi output_files \
 	hps_isw_handoff */*.svd */synthesis/*.svd */synth/*.svd *.dts *.dtb *.xml \
@@ -556,6 +556,8 @@ sd-create-netboot-image: u-boot-netboot.scr $(UBOOT_STAMP) $(PRELOADER_STAMP)
 	sudo umount temp_mount
 	rmdir temp_mount
 	sudo losetup -d /dev/loop0
+
+SCRUB_CLEAN_FILES += sdcard-netboot.img
 
 
 ################################################
