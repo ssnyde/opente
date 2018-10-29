@@ -4,3 +4,6 @@
 [submodule "scpi-parser"]
 	path = external/scpi-parser
 	url = git@github.com:j123b567/scpi-parser.git
+[submodule "bsp/de10-nano-software/linux-socfpga"]
+	path = bsp/de10-nano-software/linux-socfpga
+	url = git@github.com:altera-opensource/linux-socfpga.git
