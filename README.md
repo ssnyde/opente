@@ -21,18 +21,20 @@ external\
   Submodules for external source code
 ```
 ## Build commands
-### Hardware
+### Setup, download binary toolchain
+1. ./build/setup.sh
+### Hardware, netboot
 1. cd bsp/de10-nano-hardware
-2. make qsys_compile
-3. make quartus_compile
-
+2. make all
+3. make sd-create-image-netboot
+4. cd bsp/de10-nano-software
 ### Software
-make all (may or may not build hardware as a depedency)
-
+1. cd host/vxi11-cmd
+2. make
+3. cd host/vxi11-device-logic-analyzer
+4. make
 ### Output files
-Preloader image: software/preloader/preloader-mkpimage.bin
-U-boot image: software/preloader/uboot-socfpga/u-boot.img
-Compiled boot script: u-boot.scr
-Device tree binary: soc_system.dtb
-FPGA raw bitstream: output_files/de10_nano_hardware.rbf
+Bootloader image: bsp/de10-nano-hardware/sd-card-netboot.img
+Host vxi11 command tool: out/host/vxi11-cmd/bin/vxi11-cmd
+Device vxi11 logic analyzer service: out/device/vxi11-device-logic-analyzer/bin/vxi11_svc
 

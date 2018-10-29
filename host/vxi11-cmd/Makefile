@@ -41,7 +41,8 @@ TAGS: $(wildcard *.c) $(wildcard *.h) $(wildcard *.cc)
 	etags $^
 
 clean:
-	rm -fr out
+	rm -fr $(BIN)
+	rm -fr $(TMP)
 	rm -f TAGS
 
 $(shell mkdir -p $(BIN))

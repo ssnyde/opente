@@ -7,3 +7,6 @@
 [submodule "bsp/de10-nano-software/linux-socfpga"]
 	path = bsp/de10-nano-software/linux-socfpga
 	url = git@github.com:altera-opensource/linux-socfpga.git
+[submodule "bsp/de10-nano-software/buildroot"]
+	path = bsp/de10-nano-software/buildroot
+	url = git://git.buildroot.net/buildroot
