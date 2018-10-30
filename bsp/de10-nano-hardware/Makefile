@@ -568,7 +568,7 @@ sd-create-image: u-boot.scr $(UBOOT_STAMP) $(PRELOADER_STAMP)
 	sudo mkfs.ext4 /dev/loop0p2
 	mkdir -p temp_mount
 	sudo mount /dev/loop0p1 temp_mount/
-	sudo cp software/preloader/uboot-socfpga/u-boot.img u-boot-netboot.scr \
+	sudo cp software/preloader/uboot-socfpga/u-boot.img u-boot.scr \
 		output_files/de10_nano_hardware.rbf soc_system.dtb \
 		temp_mount/
 	sync
