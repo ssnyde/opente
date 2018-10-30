@@ -12,7 +12,7 @@ setenv nfsip 192.168.1.110
 setenv bootargs console=ttyS0,115200 ip=dhcp root=/dev/nfs rw nfsroot=${nfsip}:${nfs-rootfs-dir}
 
 #set variables for the files to be transferred
-setenv fpga-image soc_system.rbf
+setenv fpga-image de10_nano_hardware.rbf
 setenv dtb-image soc_system.dtb
 setenv kernel-image zImage
 

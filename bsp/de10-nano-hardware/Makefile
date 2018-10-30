@@ -72,7 +72,7 @@ default: help
 
 ################################################
 .PHONY: all
-all: preloader uboot dts dtb sd-fat
+all: u-boot.scr u-boot-netboot.scr preloader uboot dts dtb sd-fat
 
 ifeq ($(HAVE_QUARTUS),1)
 all: sof rbf
