@@ -446,6 +446,9 @@ PRELOADER_EXTRA_ARGS += \
 	--set spl.boot.SDRAM_SCRUBBING true
 endif
 
+PRELOADER_EXTRA_ARGS += \
+	--set spl.boot.FAT_SUPPORT true
+
 
 .PHONY: preloader
 preloader: $(PRELOADER_STAMP)
