@@ -23,12 +23,21 @@ external\
 ## Build commands
 ### Setup, download binary toolchain
 1. ./build/setup.sh
-### Hardware, netboot
+2. cd docker, install Quartus (both QuartusLiteSetup and SoCEDSSetup, eventually this will be dockerized)
+### BSP (FPGA image, bootloaders, linux, root file system)
+1. cd bsp
+2. ./build.sh all
+### Hardware and bootloaders only
 1. cd bsp/de10-nano-hardware
 2. make all
-3. make sd-create-image-netboot
-4. cd bsp/de10-nano-software
-### Software
+3. make sd-create-image-netboot (or sd-create-image to include fpga and device tree)
+### Linux and root file system
+1. cd bsp/de10-nano-software
+2. ./build.sh
+### Copy FPGA image, device tree, Linux, and root file system to tftp and nfs
+1. cd bsp
+2. ./build.sh copy_to_server
+### Application Software
 1. cd host/vxi11-cmd
 2. make
 3. cd host/vxi11-device-logic-analyzer
