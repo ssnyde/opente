@@ -44,6 +44,8 @@ external\
 4. make
 ### Output files
 Bootloader image: bsp/de10-nano-hardware/sd-card-netboot.img
+
 Host vxi11 command tool: out/host/vxi11-cmd/bin/vxi11-cmd
+
 Device vxi11 logic analyzer service: out/device/vxi11-device-logic-analyzer/bin/vxi11_svc
 

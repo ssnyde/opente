@@ -271,6 +271,7 @@ QUARTUS_RBF := $(patsubst %.sof,%.rbf,$(QUARTUS_SOF))
 # the whole register, it should be 0x50.
 #
 # CVSoC DevBoard SW1 MSEL should be set to up,down,up,down,up,up
+# DE10-Nano SW10 MSEL should be off, off, off, off, on, off (MSB first)
 #
 
 ifeq ($(HAVE_QUARTUS),1)
@@ -554,7 +555,8 @@ sd-create-netboot-image: u-boot-netboot.scr $(UBOOT_STAMP) $(PRELOADER_STAMP)
 	sudo mkfs -t vfat /dev/loop0p1
 	mkdir -p temp_mount
 	sudo mount /dev/loop0p1 temp_mount/
-	sudo cp software/preloader/uboot-socfpga/u-boot.img u-boot-netboot.scr temp_mount/
+	sudo cp software/preloader/uboot-socfpga/u-boot.img temp_mount/
+	sudo cp u-boot-netboot.scr temp_mount/u-boot.scr
 	sync
 	sudo umount temp_mount
 	rmdir temp_mount

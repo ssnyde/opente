@@ -1,7 +1,10 @@
+setenv ipaddr 192.168.1.222
+setenv ethaddr 02:aa:bb:cc:dd:ee
+
 #set variables for the directories where the boot files are saved
 setenv tftp-kernel-dir opente_kernel
 setenv tftp-sockit-dir opente_fpga
-setenv nfs-rootfs-dir /srv/nfs/opente_rootfs/rootfs/
+setenv nfs-rootfs-dir /srv/nfs/opente_rootfs/
 
 #serverip and nfsip are the same here, but the TFTP and NFS servers could be 2 separate servers with different IP addresses
 setenv serverip 192.168.1.110
