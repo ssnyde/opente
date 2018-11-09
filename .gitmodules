@@ -10,3 +10,6 @@
 [submodule "bsp/de10-nano-software/buildroot"]
 	path = bsp/de10-nano-software/buildroot
 	url = git://git.buildroot.net/buildroot
+[submodule "external/svunit-code"]
+	path = external/svunit-code
+	url = git@github.com:nosnhojn/svunit-code.git
