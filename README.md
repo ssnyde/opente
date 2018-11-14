@@ -1,4 +1,6 @@
 # opente
+Note all directories are relative to the git repository root
+
 ## Sources
 de10-nano-hardware based on GHRD demo from terasic DE10-Nano_v.1.2.3_HWrevAB_SystemC
 refer to flow described at https://bitlog.it/hardware/building-embedded-linux-for-the-terasic-de10-nano-and-other-cyclone-v-soc-fpgas/
@@ -20,13 +22,17 @@ device\
 external\
   Submodules for external source code
 ```
+## Environment Setup
+Run this script to add necessary directoires to path
+1. setup_env.sh
+
 ## Build commands
 ### Setup, download binary toolchain
 1. ./build/setup.sh
 2. cd docker, install Quartus (both QuartusLiteSetup and SoCEDSSetup, eventually this will be dockerized)
 ### BSP (FPGA image and bootloaders, Linux kernel, root file system)
 1. cd bsp
-2. ./build.sh all
+2. ./de10-nano-build.sh all
 #### FPGA image and bootloaders only
 1. cd bsp/de10-nano-hardware
 2. make all
@@ -42,7 +48,11 @@ external\
 2. make
 3. cd host/vxi11-device-logic-analyzer
 4. make
-### Output files
+
+## Simulation Commands
+1. 
+
+## Output files
 Bootloader image: bsp/de10-nano-hardware/sd-card-netboot.img
 
 Host vxi11 command tool: out/host/vxi11-cmd/bin/vxi11-cmd

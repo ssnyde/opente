@@ -1,6 +1,8 @@
 module regfile(
 	       input 		 clk,
-	       input [20:0] 	 address, //2MB address space
+	       input 		 reset_n,
+	       //6bit space, 64 registers, 32 writeable, 32 read only
+	       input [5:0] 	 address, 
 	       input 		 read,
 	       output reg [31:0] readdata,
 	       input 		 write,
@@ -9,23 +11,32 @@ module regfile(
 	       );
    
    
-   reg [31:0] 		     regfile[7:0];
-   
+   reg [31:0] 		     regfile[64:0];
+
+   //decoder logic, first 32 registers read from regfile, next from wires
    always @(*) begin
-      if (address < 20'hff)
-	readdata = regfile[address[7:0]];
-      else if (address == 20'h100)
+      if (address < 6'd32)
+	readdata = regfile[address[4:0]];
+      else if (address == 6'd32)
 	readdata = 32'hdeadbeef;
       else
 	readdata = 32'd0;
    end
 
-   always @(posedge clk) begin
-      if (write && address <= 20'hff)
-	regfile[address[7:0]] = writedata;
+   //reset and write
+   integer 		     j;
+   always @(posedge clk or negedge reset_n) begin
+      if (!reset_n) begin
+	 for (j=0; j<32; j=j+1) begin
+	    regfile[j] <= 32'd0;
+	 end
+      end else begin
+	 if (write && address <= 6'd32)
+	   regfile[address[4:0]] = writedata;
+      end
    end
 
-   assign waitreqeust = 1'b0;
+   assign waitrequest = 1'b0;
   
 endmodule // regfile
 

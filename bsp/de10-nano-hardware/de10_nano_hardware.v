@@ -254,7 +254,7 @@ always @(posedge fpga_clk_50 or negedge hps_fpga_reset_n) begin
         led_level <= 0;
     end
 
-    else if (counter == 24999999) begin
+    else if (counter == 5000000) begin
         counter <= 0;
         led_level <= ~led_level;
     end
