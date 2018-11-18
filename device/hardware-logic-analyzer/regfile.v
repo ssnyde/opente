@@ -11,7 +11,7 @@ module regfile(
 	       );
    
    
-   reg [31:0] 		     regfile[64:0];
+   reg [31:0] 		     regfile[31:0];
 
    //decoder logic, first 32 registers read from regfile, next from wires
    always @(*) begin
