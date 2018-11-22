@@ -19,7 +19,16 @@ module regfile_unit_test;
    wire        waitrequest;
    reg 	       reset_n;
    
-   regfile my_regfile(.*);
+   regfile my_regfile(.clk(clk),
+		      .read(read),
+		      .write(write),
+		      .address(address),
+		      .writedata(writedata),
+		      .readdata(readdata),
+		      .waitrequest(waitrequest),
+		      .reset_n(reset_n),
+		      .reg_32(32'hdeadbeef)
+		      );
 
    initial begin
       clk = 0;
@@ -43,7 +52,7 @@ module regfile_unit_test;
       reset_n = 1;
       read = 0;
       write = 0;
-      address = 20'h0;
+      address = 6'h0;
       writedata = 32'h0;
       @(posedge clk);
       #1;
@@ -95,6 +104,8 @@ module regfile_unit_test;
    write = 1;
    @(posedge clk);
    #1;
+   read = 1;
+   #1;
    `FAIL_UNLESS_EQUAL(readdata,32'hdeadbeef);
    `SVTEST_END
 
@@ -103,6 +114,8 @@ module regfile_unit_test;
    writedata = 32'habcd1234;
    write = 1;
    @(posedge clk);
+   #1;
+   read = 1;
    #1;
    `FAIL_UNLESS_EQUAL(readdata,32'habcd1234);
    `SVTEST_END
@@ -117,6 +130,8 @@ module regfile_unit_test;
    writedata = 32'h1234abcd;
    @(posedge clk);
    #1;
+   read = 1;
+   #1;
    `FAIL_UNLESS_EQUAL(readdata,32'habcd1234);
    `SVTEST_END
 
@@ -130,6 +145,7 @@ module regfile_unit_test;
       #1;
    end
    write = 0;
+   read = 1;
    for (j=0; j<32; j=j+1) begin
       address = j;
       #1;
@@ -139,6 +155,7 @@ module regfile_unit_test;
 
    `SVTEST(wire_read)
    address = 6'd32;
+   read = 1;
    #1;
    `FAIL_UNLESS_EQUAL(readdata,32'hdeadbeef);
    `SVTEST_END

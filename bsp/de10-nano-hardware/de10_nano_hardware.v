@@ -91,7 +91,7 @@ module de10_nano_hardware(
 //=======================================================
 wire hps_fpga_reset_n;
 wire     [1: 0]     fpga_debounced_buttons;
-wire     [6: 0]     fpga_led_internal;
+wire     [5: 0]     fpga_led_internal;
 wire     [2: 0]     hps_reset_req;
 wire                hps_cold_reset;
 wire                hps_warm_reset;
@@ -99,10 +99,14 @@ wire                hps_debug_reset;
 wire     [27: 0]    stm_hw_events;
 wire                fpga_clk_50;
 // connection of internal logics
-assign LED[7: 1] = fpga_led_internal;
+assign LED[7: 2] = fpga_led_internal;
 assign fpga_clk_50 = FPGA_CLK1_50;
-assign stm_hw_events = {{15{1'b0}}, SW, fpga_led_internal, fpga_debounced_buttons};
-
+assign stm_hw_events = {{16{1'b0}}, SW, fpga_led_internal, fpga_debounced_buttons};
+//test for regfile
+wire [31:0] 	    reg_0;
+wire [31:0] 	    reg_1;
+assign LED[1] = ^reg_0;
+   
 
 
 //=======================================================
@@ -195,7 +199,12 @@ soc_system u0(
                .hps_0_f2h_debug_reset_req_reset_n(~hps_debug_reset),        //      hps_0_f2h_debug_reset_req.reset_n
                .hps_0_f2h_stm_hw_events_stm_hwevents(stm_hw_events),        //        hps_0_f2h_stm_hw_events.stm_hwevents
                .hps_0_f2h_warm_reset_req_reset_n(~hps_warm_reset),          //       hps_0_f2h_warm_reset_req.reset_n
-
+	      // regfile_0_registers
+	      .regfile_0_registers_reg_0(reg_0),
+	      .regfile_0_registers_reg_1(reg_1),
+	      .regfile_0_registers_reg_32(32'hDEADBEEF),
+	      .regfile_0_registers_reg_33(reg_1),
+	      
            );
 
 // Debounce logic to clean out glitches within 1ms
