@@ -201,7 +201,7 @@ module regfile(
 	    if (!reset_n) begin
 	       regfile[j] <= 32'd0;
 	    end else begin
-	       regfile[j] <= (write && (address[4:0] == j)) ? writedata : regfile[j];
+	       regfile[j] <= (write && (address == j)) ? writedata : regfile[j];
 	    end
 	 end
       end

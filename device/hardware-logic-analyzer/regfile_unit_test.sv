@@ -159,6 +159,13 @@ module regfile_unit_test;
    #1;
    `FAIL_UNLESS_EQUAL(readdata,32'hdeadbeef);
    `SVTEST_END
+
+     `SVTEST(wire_read_not_asserted)
+   address = 6'd32;
+   read = 0;
+   #1;
+   `FAIL_UNLESS_EQUAL(readdata,32'h0);
+   `SVTEST_END
    
    `SVUNIT_TESTS_END
 
