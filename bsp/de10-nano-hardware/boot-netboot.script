@@ -12,7 +12,7 @@ setenv nfsip 192.168.1.110
 #these arguments will be passed to the linux kernel during boot
 #this sets up the serial terminal and baud rate, tells the kernel to obtain an IP address via dhcp,
 #and sets the nfs information for the kernel rootfs
-setenv bootargs mem=512M console=ttyS0,115200 ip=dhcp root=/dev/nfs rw nfsroot=${nfsip}:${nfs-rootfs-dir}
+setenv bootargs console=ttyS0,115200 ip=dhcp root=/dev/nfs rw mem=512M nfsroot=${nfsip}:${nfs-rootfs-dir}
 
 #set variables for the files to be transferred
 setenv fpga-image de10_nano_hardware.rbf

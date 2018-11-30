@@ -2,13 +2,12 @@
 //this module is the avalon mm master to the hps sdram
 
 module sdram_master(
-		    input 	      reset,
+		    input 	      reset_n,
 		    input 	      clk,
 		    //avalon-mm interface, write only
 		    //based on Cyclon V HPS TRM
-		    //omitting burstcount and byteenable for now
+		    //omitting bureset_ncount and byteenable for now
 		    output reg [31:0] address,
-		    input [1:0]       response,
 		    output reg 	      write,
 		    output reg [31:0] writedata,
 		    input 	      waitrequest,
@@ -31,9 +30,13 @@ module sdram_master(
    reg 					  test_start_q;
    wire 				  test_start_edge;
 
+   //continuous assignments
+   assign test_start_edge = test_start && !test_start_q;
+   assign test_active = ((test_state != TEST_STATE_IDLE) && !test_start_edge);
+
    //flip flops / registers
-   always @(posedge clk or negedge rst) begin
-      if (!rst) begin
+   always @(posedge clk or negedge reset_n) begin
+      if (!reset_n) begin
 	 test_state <= TEST_STATE_IDLE;
 	 test_counter <= 8'd0;
 	 test_start_q <= 0;
@@ -43,9 +46,9 @@ module sdram_master(
 	 test_counter <= test_next_counter;
 	 test_start_q <= test_start;
       end
-   end // always @ (posedge clk or negedge rst)
+   end // always @ (posedge clk or negedge reset_n)
 
-   assign test_start_edge = test_start ^ test_start_q;
+
 
    //state machine state transitions and outputs
    always @(*) begin
@@ -69,10 +72,6 @@ module sdram_master(
 	   if (!waitrequest && (test_counter == 8'hff))
 	     test_next_state = TEST_STATE_IDLE;
 	end
-	default: begin
-
-	end
+      endcase
    end
-      
-
 endmodule
