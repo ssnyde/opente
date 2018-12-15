@@ -43,6 +43,9 @@ Run this script to add necessary directoires to path
 #### Copy FPGA image, device tree, Linux, and root file system to tftp and nfs
 1. cd bsp
 2. ./build.sh copy_to_server
+#### Copy bootloaders to sd card
+1. dd if=sdcard-netboot.img of=/dev/mmcblk0 bs=2048
+2. sync
 ### Application Software
 1. cd host/vxi11-cmd
 2. make

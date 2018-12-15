@@ -105,6 +105,8 @@ assign stm_hw_events = {{16{1'b0}}, SW, fpga_led_internal, fpga_debounced_button
 //test for regfile
 wire [31:0] 	    reg_0;
 wire [31:0] 	    reg_1;
+wire [31:0] 	    reg_2;
+wire [31:0] 	    reg_34;
 assign LED[1] = ^reg_0;
    
 
@@ -202,9 +204,14 @@ soc_system u0(
 	      // regfile_0_registers
 	      .regfile_0_registers_reg_0(reg_0),
 	      .regfile_0_registers_reg_1(reg_1),
+	      .regfile_0_registers_reg_2(reg_2),
 	      .regfile_0_registers_reg_32(32'hDEADBEEF),
 	      .regfile_0_registers_reg_33(reg_1),
-	      
+	      .regfile_0_registers_reg_34(reg_34),
+	      // sdram_master_0_control
+	      .sdram_master_0_control_test_mode(),
+	      .sdram_master_0_control_test_start(reg_2[0]),
+	      .sdram_master_0_control_test_active(reg_34[0]),
            );
 
 // Debounce logic to clean out glitches within 1ms

@@ -22,17 +22,20 @@ module sdram_master(
    
    localparam TEST_STATE_IDLE = 0;
    localparam TEST_STATE_INC_WRITE = 1;
-   localparam BASE_ADDRESS = 32'd0;
+   //word address
+   localparam BASE_ADDRESS = 32'h0c000000;
 
    reg [7:0] 				  test_counter;
    reg [7:0] 				  test_next_counter;
 
    reg 					  test_start_q;
    wire 				  test_start_edge;
+   reg 					  test_start_edge_q;
 
    //continuous assignments
    assign test_start_edge = test_start && !test_start_q;
-   assign test_active = ((test_state != TEST_STATE_IDLE) && !test_start_edge);
+   //assign test_active = ((test_state != TEST_STATE_IDLE) && !test_start_edge);
+   assign test_active = test_start_edge_q;
 
    //flip flops / registers
    always @(posedge clk or negedge reset_n) begin
@@ -40,15 +43,15 @@ module sdram_master(
 	 test_state <= TEST_STATE_IDLE;
 	 test_counter <= 8'd0;
 	 test_start_q <= 0;
+	 test_start_edge_q <= 0;
       end
       else begin
 	 test_state <= test_next_state;
 	 test_counter <= test_next_counter;
 	 test_start_q <= test_start;
+	 test_start_edge_q <= (test_start_edge_q | test_start_edge) & test_start;
       end
    end // always @ (posedge clk or negedge reset_n)
-
-
 
    //state machine state transitions and outputs
    always @(*) begin

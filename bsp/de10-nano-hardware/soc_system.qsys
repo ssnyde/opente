@@ -250,6 +250,30 @@
          type = "String";
       }
    }
+   element sdram_master_0
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+   }
+   element soc_system
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
+   element soc_system
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
    element sysid_qsys
    {
       datum _sortIndex
@@ -347,6 +371,11 @@
    type="conduit"
    dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
+ <interface
+   name="sdram_master_0_control"
+   internal="sdram_master_0.control"
+   type="conduit"
+   dir="end" />
  <module
    name="ILC"
    kind="interrupt_latency_counter"
@@ -528,7 +557,7 @@
   <parameter name="F2SCLK_SDRAMCLK_Enable" value="false" />
   <parameter name="F2SCLK_SDRAMCLK_FREQ" value="0" />
   <parameter name="F2SCLK_WARMRST_Enable" value="true" />
-  <parameter name="F2SDRAM_Type">Avalon-MM Bidirectional</parameter>
+  <parameter name="F2SDRAM_Type">Avalon-MM Write-Only</parameter>
   <parameter name="F2SDRAM_Width" value="32" />
   <parameter name="F2SINTERRUPT_Enable" value="true" />
   <parameter name="F2S_Width" value="2" />
@@ -1014,6 +1043,7 @@
   <parameter name="USE_RESPONSE" value="0" />
  </module>
  <module name="regfile_0" kind="regfile" version="1.0" enabled="1" />
+ <module name="sdram_master_0" kind="sdram_master" version="1.0" enabled="1" />
  <module
    name="sysid_qsys"
    kind="altera_avalon_sysid_qsys"
@@ -1021,6 +1051,15 @@
    enabled="1">
   <parameter name="id" value="-1395322110" />
  </module>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="sdram_master_0.avalon_master"
+   end="hps_0.f2h_sdram0_data">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <connection
    kind="avalon"
    version="17.1"
@@ -1197,6 +1236,11 @@
    kind="clock"
    version="17.1"
    start="clk_0.clk"
+   end="sdram_master_0.clock" />
+ <connection
+   kind="clock"
+   version="17.1"
+   start="clk_0.clk"
    end="hps_0.f2h_axi_clock" />
  <connection
    kind="clock"
@@ -1288,6 +1332,11 @@
    version="17.1"
    start="clk_0.clk_reset"
    end="mm_bridge_0.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="clk_0.clk_reset"
+   end="sdram_master_0.reset" />
  <connection kind="reset" version="17.1" start="clk_0.clk_reset" end="ILC.reset_n" />
  <connection
    kind="reset"
