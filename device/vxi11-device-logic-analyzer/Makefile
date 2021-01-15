@@ -1,8 +1,8 @@
 VERSION=1.08
 
 #CFLAGS = -Wall -g
-CFLAGS = -pg -fpermissive -fPIC
-CXX = g++
+CFLAGS = -pg -fPIC
+CXX = $(CROSS_COMPILE)gcc
 #LDFLAGS = -Wl,--version-script=linker.version
 BIN = ../../out/device/vxi11-device-logic-analyzer/bin
 TMP = ../../out/device/vxi11-device-logic-analyzer/tmp

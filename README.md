@@ -1,6 +1,11 @@
 # opente
 Note all directories are relative to the git repository root
 
+## Hardware Architecture
+
+### Memory Map
+
+
 ## Sources
 de10-nano-hardware based on GHRD demo from terasic DE10-Nano_v.1.2.3_HWrevAB_SystemC
 refer to flow described at https://bitlog.it/hardware/building-embedded-linux-for-the-terasic-de10-nano-and-other-cyclone-v-soc-fpgas/
@@ -37,6 +42,10 @@ Run this script to add necessary directoires to path
 1. cd bsp/de10-nano-hardware
 2. make all
 3. make sd-create-image-netboot (or sd-create-image to include fpga and device tree)
+#### FPGA image
+1. cd bsp/de10-nano-hardware
+2. make rbf
+3. make doesn't pickup all change, rm stamp/17.1/quartus.stamp if needed to trigger rebuild
 #### Linux kernel and root file system
 1. cd bsp/de10-nano-software
 2. ./build.sh
@@ -53,7 +62,9 @@ Run this script to add necessary directoires to path
 4. make
 
 ## Simulation Commands
-1. 
+1. runSVUnit -t avalon_source_tester_unit_test.sv -s modelsim
+2. Check console output
+3. If needed, run vsim to open gui
 
 ## Output files
 Bootloader image: bsp/de10-nano-hardware/sd-card-netboot.img

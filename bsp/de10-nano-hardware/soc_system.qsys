@@ -274,6 +274,14 @@
          type = "String";
       }
    }
+   element soc_system
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
    element sysid_qsys
    {
       datum _sortIndex
@@ -371,6 +379,11 @@
    type="conduit"
    dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
+ <interface
+   name="sdram_master_0_avalon_streaming_sink"
+   internal="sdram_master_0.avalon_streaming_sink"
+   type="avalon_streaming"
+   dir="end" />
  <interface
    name="sdram_master_0_control"
    internal="sdram_master_0.control"

@@ -106,10 +106,17 @@ assign stm_hw_events = {{16{1'b0}}, SW, fpga_led_internal, fpga_debounced_button
 wire [31:0] 	    reg_0;
 wire [31:0] 	    reg_1;
 wire [31:0] 	    reg_2;
+wire [31:0] 	    reg_3;
+wire [31:0] 	    reg_4;
+wire [31:0] 	    reg_31;
 wire [31:0] 	    reg_34;
+wire [31:0] 	    reg_35;
+wire [31:0] 	    reg_64;
 assign LED[1] = ^reg_0;
    
-
+   wire [31:0] 	    st_data_test;
+   wire 	    st_ready_test;
+   wire 	    st_valid_test;
 
 //=======================================================
 //  Structural coding
@@ -202,17 +209,42 @@ soc_system u0(
                .hps_0_f2h_stm_hw_events_stm_hwevents(stm_hw_events),        //        hps_0_f2h_stm_hw_events.stm_hwevents
                .hps_0_f2h_warm_reset_req_reset_n(~hps_warm_reset),          //       hps_0_f2h_warm_reset_req.reset_n
 	      // regfile_0_registers
+	      // control LED1 with xor of bits
 	      .regfile_0_registers_reg_0(reg_0),
+	      // loop back to reg_33
 	      .regfile_0_registers_reg_1(reg_1),
 	      .regfile_0_registers_reg_2(reg_2),
+	      .regfile_0_registers_reg_3(reg_3),
+	      .regfile_0_registers_reg_4(reg_4),
+	      .regfile_0_registers_reg_31(reg_31),
 	      .regfile_0_registers_reg_32(32'hDEADBEEF),
 	      .regfile_0_registers_reg_33(reg_1),
 	      .regfile_0_registers_reg_34(reg_34),
+	      .regfile_0_registers_reg_35(reg_35),
+	      .regfile_0_registers_reg_64(reg_64),
 	      // sdram_master_0_control
-	      .sdram_master_0_control_test_mode(),
-	      .sdram_master_0_control_test_start(reg_2[0]),
+	      .sdram_master_0_control_test_mode(reg_2[0]),
+	      .sdram_master_0_control_test_start(reg_31[0]),
 	      .sdram_master_0_control_test_active(reg_34[0]),
+	      .sdram_master_0_control_set_address(reg_31[1]),
+	      .sdram_master_0_control_new_address(reg_3),
+	      .sdram_master_0_control_current_address(reg_35),
+	      .sdram_master_0_avalon_streaming_sink_data(st_data_test),
+	      .sdram_master_0_avalon_streaming_sink_valid(st_valid_test),
+	      .sdram_master_0_avalon_streaming_sink_ready(st_ready_test),
            );
+
+   avalon_source_tester u_avalon_source_tester(
+					       .clk(FPGA_CLK1_50),
+					       .reset_n(hps_fpga_reset_n),
+					       .st_data(st_data_test),
+					       .st_ready(st_ready_test),
+					       .st_valid(st_valid_test),
+					       .pattern(reg_2[2:1]),
+					       .start(reg_64[2]),
+					       .size(reg_4)
+					       );
+					       
 
 // Debounce logic to clean out glitches within 1ms
 debounce debounce_inst(

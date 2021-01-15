@@ -8,13 +8,14 @@ module regfile(
 	       input 		 clk,
 	       input 		 reset_n,
 	       //6bit space, 64 registers, 32 writeable, 32 read only
-	       input [5:0] 	 address, 
+	       input [6:0] 	 address, 
 	       input 		 read,
 	       output reg [31:0] readdata,
 	       input 		 write,
 	       input [31:0] 	 writedata,
 	       output 		 waitrequest,
 	       //registers broken out as individual ports
+	       // reg_0 to reg_31 are read/write
 	       output [31:0] 	 reg_0,
 	       output [31:0] 	 reg_1,
 	       output [31:0] 	 reg_2,
@@ -47,6 +48,7 @@ module regfile(
 	       output [31:0] 	 reg_29,
 	       output [31:0] 	 reg_30,
 	       output [31:0] 	 reg_31,
+	       // reg_32 to reg_63 are read only
 	       input [31:0] 	 reg_32,
 	       input [31:0] 	 reg_33,
 	       input [31:0] 	 reg_34,
@@ -78,7 +80,9 @@ module regfile(
 	       input [31:0] 	 reg_60,
 	       input [31:0] 	 reg_61,
 	       input [31:0] 	 reg_62,
-	       input [31:0] 	 reg_63
+	       input [31:0] 	 reg_63,
+	       // reg_64 through ... are write only to strobe a signal
+	       output [31:0] 	 reg_64
 	       );
    
    
@@ -87,71 +91,71 @@ module regfile(
    //decoder logic, first 32 registers read from regfile, next from wires
    always @(*) begin
       if (read) begin
-	 if (address < 6'd32)
+	 if (address < 7'd32)
 	   readdata = regfile[address[4:0]];
-	 else if (address == 6'd32)
+	 else if (address == 7'd32)
 	   readdata = reg_32;
-	 else if (address == 6'd33)
+	 else if (address == 7'd33)
 	   readdata = reg_33;
-	 else if (address == 6'd34)
+	 else if (address == 7'd34)
 	   readdata = reg_34;
-	 else if (address == 6'd35)
+	 else if (address == 7'd35)
 	   readdata = reg_35;
-	 else if (address == 6'd36)
+	 else if (address == 7'd36)
 	   readdata = reg_36;
-	 else if (address == 6'd37)
+	 else if (address == 7'd37)
 	   readdata = reg_37;
-	 else if (address == 6'd38)
+	 else if (address == 7'd38)
 	   readdata = reg_38;
-	 else if (address == 6'd39)
+	 else if (address == 7'd39)
 	   readdata = reg_39;
-	 else if (address == 6'd40)
+	 else if (address == 7'd40)
 	   readdata = reg_40;
-	 else if (address == 6'd41)
+	 else if (address == 7'd41)
 	   readdata = reg_41;
-	 else if (address == 6'd42)
+	 else if (address == 7'd42)
 	   readdata = reg_42;
-	 else if (address == 6'd43)
+	 else if (address == 7'd43)
 	   readdata = reg_43;
-	 else if (address == 6'd44)
+	 else if (address == 7'd44)
 	   readdata = reg_44;
-	 else if (address == 6'd45)
+	 else if (address == 7'd45)
 	   readdata = reg_45;
-	 else if (address == 6'd46)
+	 else if (address == 7'd46)
 	   readdata = reg_46;
-	 else if (address == 6'd47)
+	 else if (address == 7'd47)
 	   readdata = reg_47;
-	 else if (address == 6'd48)
+	 else if (address == 7'd48)
 	   readdata = reg_48;
-	 else if (address == 6'd49)
+	 else if (address == 7'd49)
 	   readdata = reg_49;
-	 else if (address == 6'd50)
+	 else if (address == 7'd50)
 	   readdata = reg_50;
-	 else if (address == 6'd51)
+	 else if (address == 7'd51)
 	   readdata = reg_51;
-	 else if (address == 6'd52)
+	 else if (address == 7'd52)
 	   readdata = reg_52;
-	 else if (address == 6'd53)
+	 else if (address == 7'd53)
 	   readdata = reg_53;
-	 else if (address == 6'd54)
+	 else if (address == 7'd54)
 	   readdata = reg_54;
-	 else if (address == 6'd55)
+	 else if (address == 7'd55)
 	   readdata = reg_55;
-	 else if (address == 6'd56)
+	 else if (address == 7'd56)
 	   readdata = reg_56;
-	 else if (address == 6'd57)
+	 else if (address == 7'd57)
 	   readdata = reg_57;
-	 else if (address == 6'd58)
+	 else if (address == 7'd58)
 	   readdata = reg_58;
-	 else if (address == 6'd59)
+	 else if (address == 7'd59)
 	   readdata = reg_59;
-	 else if (address == 6'd60)
+	 else if (address == 7'd60)
 	   readdata = reg_60;
-	 else if (address == 6'd61)
+	 else if (address == 7'd61)
 	   readdata = reg_61;
-	 else if (address == 6'd62)
+	 else if (address == 7'd62)
 	   readdata = reg_62;
-	 else if (address == 6'd63)
+	 else if (address == 7'd63)
 	   readdata = reg_63;
 	 else
 	   readdata = 32'd0;
@@ -206,6 +210,9 @@ module regfile(
 	 end
       end
    endgenerate
+
+   //write only registers
+   assign reg_64 = ((address == 7'd64) && write) ? writedata : 32'd0;
 
    assign waitrequest = 1'b0;
   

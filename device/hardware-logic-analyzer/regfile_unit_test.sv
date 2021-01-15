@@ -13,11 +13,12 @@ module regfile_unit_test;
    // running the Unit Tests on
    //===================================
    reg 	  clk, read, write;
-   reg [5:0] address;
+   reg [6:0] address;
    reg [31:0] writedata;
    wire [31:0] readdata;
    wire        waitrequest;
    reg 	       reset_n;
+   wire [31:0]       reg_64;
    
    regfile my_regfile(.clk(clk),
 		      .read(read),
@@ -27,7 +28,8 @@ module regfile_unit_test;
 		      .readdata(readdata),
 		      .waitrequest(waitrequest),
 		      .reset_n(reset_n),
-		      .reg_32(32'hdeadbeef)
+		      .reg_32(32'hdeadbeef),
+		      .reg_64(reg_64)
 		      );
 
    initial begin
@@ -52,7 +54,7 @@ module regfile_unit_test;
       reset_n = 1;
       read = 0;
       write = 0;
-      address = 6'h0;
+      address = 7'h0;
       writedata = 32'h0;
       @(posedge clk);
       #1;
@@ -99,7 +101,7 @@ module regfile_unit_test;
    `SVTEST_END
 
    `SVTEST(write_addr_0_read_back)
-   address = 6'h0;
+   address = 7'h0;
    writedata = 32'hdeadbeef;
    write = 1;
    @(posedge clk);
@@ -110,7 +112,7 @@ module regfile_unit_test;
    `SVTEST_END
 
    `SVTEST(write_addr_1_read_back)
-   address = 6'h1;
+   address = 7'h1;
    writedata = 32'habcd1234;
    write = 1;
    @(posedge clk);
@@ -121,7 +123,7 @@ module regfile_unit_test;
    `SVTEST_END
 
    `SVTEST(write_preserved_after_changed_writedata)
-   address = 6'h1;
+   address = 7'h1;
    writedata = 32'habcd1234;
    write = 1;
    @(posedge clk);
@@ -154,17 +156,26 @@ module regfile_unit_test;
    `SVTEST_END
 
    `SVTEST(wire_read)
-   address = 6'd32;
+   address = 7'd32;
    read = 1;
    #1;
    `FAIL_UNLESS_EQUAL(readdata,32'hdeadbeef);
    `SVTEST_END
 
      `SVTEST(wire_read_not_asserted)
-   address = 6'd32;
+   address = 7'd32;
    read = 0;
    #1;
    `FAIL_UNLESS_EQUAL(readdata,32'h0);
+   `SVTEST_END
+
+     `SVTEST(write_only_reg_64)
+   address = 7'd64;
+   write = 1;
+   writedata = 32'hbeefdead;
+   `FAIL_UNLESS_EQUAL(reg_64, 32'd0)
+   #1;
+   `FAIL_UNLESS_EQUAL(reg_64, 32'hbeefdead);
    `SVTEST_END
    
    `SVUNIT_TESTS_END
