@@ -260,7 +260,7 @@ begin
         end
         `STREAM_WRITE_ADDR: begin
         next_streamSt <= `STREAM_WRITE_DATA;
-	   // multiply rxData by 2 for regAddr because tmp117 sends word address, 
+	   // SS edit: multiply rxData by 2 for regAddr because tmp117 sends word address, 
 	   // but we need a byte addressed register file
         next_regAddr <= rxData << 1;
         end
