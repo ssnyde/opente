@@ -54,7 +54,7 @@
 //
 `include "i2cSlave_define.v"
 
-module serialInterface (clearStartStopDet, clk, dataIn, dataOut, regAddr, rst, scl, sdaIn, sdaOut, startStopDetState, writeEn);
+module serialInterface (clearStartStopDet, clk, dataIn, dataOut, regAddr, rst, scl, sdaIn, sdaOut, startStopDetState, writeEn, i2cRead_last_addr, i2cRead_complete);
    input   clk;
    input [7:0] dataIn;
    input       rst;
@@ -66,6 +66,8 @@ module serialInterface (clearStartStopDet, clk, dataIn, dataOut, regAddr, rst, s
    output [7:0] regAddr;
    output 	sdaOut;
    output 	writeEn;
+   output [7:0] i2cRead_last_addr;
+   output 	i2cRead_complete;
    
    reg 		clearStartStopDet, next_clearStartStopDet;
    wire 	clk;
@@ -78,12 +80,33 @@ module serialInterface (clearStartStopDet, clk, dataIn, dataOut, regAddr, rst, s
    reg 		sdaOut, next_sdaOut;
    wire [1:0] 	startStopDetState;
    reg 		writeEn, next_writeEn;
-   
+   reg [7:0] 	i2cRead_last_addr;
+   reg 		i2cRead_complete;
+   wire 	i2cRead_complete_int;
+
    // diagram signals declarations
    reg [2:0] 	bitCnt, next_bitCnt;
    reg [7:0] 	rxData, next_rxData;
    reg [1:0] 	streamSt, next_streamSt;
    reg [7:0] 	txData, next_txData;
+
+   assign i2cRead_complete_int = ((streamSt == `STREAM_READ) && (next_streamSt == `STREAM_IDLE));
+   
+   always @ (posedge clk)
+     begin
+	if (rst == 1'b1) begin
+	   i2cRead_last_addr <= 8'h0;
+	   i2cRead_complete <= 1'b0;
+	end
+	else begin
+	   i2cRead_complete <= i2cRead_complete_int;
+	   //i2cRead_complete <= 0;
+	   if (i2cRead_complete_int)
+	     i2cRead_last_addr <= ((regAddr - 8'h2) >> 1);
+	   else
+	     i2cRead_last_addr <= i2cRead_last_addr;
+	end
+     end
    
    // BINARY ENCODED state machine: SISt
    // State codes definitions:

@@ -57,7 +57,9 @@ module i2cSlave (
 		 Configuration_HIGH_Alert,
 		 Configuration_LOW_Alert,
 		 Configuration_Data_Ready,
-		 Configuration_EEPROM_Busy
+		 Configuration_EEPROM_Busy,
+		 i2cRead_last_addr,
+		 i2cRead_complete
 		 );
    
    input clk;
@@ -72,6 +74,8 @@ module i2cSlave (
    input 	Configuration_LOW_Alert;
    input 	Configuration_Data_Ready;
    input 	Configuration_EEPROM_Busy;
+   output [7:0] i2cRead_last_addr;
+   output 	i2cRead_complete;
    
    // local wires and regs
    reg 		sdaDeb;
@@ -196,7 +200,9 @@ module i2cSlave (
 				      .sdaIn(sdaDeb), 
 				      .sdaOut(sdaOut), 
 				      .startStopDetState(startStopDetState),
-				      .clearStartStopDet(clearStartStopDet) 
+				      .clearStartStopDet(clearStartStopDet),
+				      .i2cRead_last_addr(i2cRead_last_addr),
+				      .i2cRead_complete(i2cRead_complete)
 				      );
    
    
